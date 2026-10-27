@@ -1,0 +1,8 @@
+{
+  "buildCommand": "sh build.sh",
+  "outputDirectory": "dist",
+  "installCommand": "echo skip",
+  "headers": [
+    { "source": "/config.js", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }
+  ]
+}

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>서울 대기질 AI 비서</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="2025년 서울 초미세먼지·기상 기록을 바탕으로 답하는 AI 비서">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="util">
+  <div class="wrap">
+    <span class="util-src">출처: 서울 열린데이터광장 일별 대기오염도 · 기상청 기상자료개방포털 ASOS 서울(108)</span>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="화면 테마 바꾸기">테마: 시스템</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <a class="brand" href="#summary">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>
+        <span class="brand-name">서울 대기질 AI 비서</span><br>
+        <span class="brand-sub">내 대기질 기록을 알고 답하는 데이터 비서</span>
+      </span>
+    </a>
+    <span class="status-chip" id="statusChip" data-state="wait"><span class="status-dot"></span><span id="statusText">연결 확인 중</span></span>
+  </div>
+</header>
+
+<nav class="gnb" aria-label="주 메뉴">
+  <div class="wrap">
+    <a href="#summary" data-nav="summary">대기질 요약</a>
+    <a href="#chat" data-nav="chat">AI 비서</a>
+    <a href="#data" data-nav="data">데이터 관리</a>
+    <a href="#history" data-nav="history">대화 기록</a>
+  </div>
+</nav>
+
+<div id="banner" hidden></div>
+
+<main class="wrap">
+
+  <!-- ===================== 대기질 요약 ===================== -->
+  <section data-page="summary" aria-labelledby="h-summary">
+    <div class="page-head">
+      <div>
+        <div class="crumb">홈 › 대기질 요약</div>
+        <h1 id="h-summary">대기질 요약</h1>
+      </div>
+      <span class="muted small" id="periodLabel"></span>
+    </div>
+
+    <div class="stack">
+      <article class="panel">
+        <div class="panel-head"><h2>최근 기록</h2><span class="muted small" id="nowDate"></span></div>
+        <div class="now" id="nowBox"><div class="empty">불러오는 중…</div></div>
+      </article>
+
+      <div class="grid grid-2">
+        <article class="panel">
+          <div class="panel-head"><h2>데이터 요약</h2><span class="muted small">AI에게 전달되는 정보</span></div>
+          <div class="table-wrap"><table class="kv"><tbody id="summaryTable"></tbody></table></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><h2>등급별 일수</h2><span class="muted small">초미세먼지(PM2.5) 환경부 기준</span></div>
+          <div class="panel-body">
+            <div class="gradebar" id="gradeBar"></div>
+            <div class="legend" id="gradeLegend"></div>
+            <div class="table-wrap" style="margin-top:14px">
+              <table>
+                <thead><tr><th>등급</th><th class="r">농도 범위</th><th class="r">일수</th></tr></thead>
+                <tbody id="gradeTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>일별 초미세먼지 추이</h2>
+          <div class="seg" role="group" aria-label="기간 선택" id="rangeSeg">
+            <button type="button" data-range="all" aria-pressed="true">전체</button>
+            <button type="button" data-range="90" aria-pressed="false">최근 90일</button>
+            <button type="button" data-range="30" aria-pressed="false">최근 30일</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-box"><canvas id="dailyChart" role="img" aria-label="일별 초미세먼지 농도 선 그래프"></canvas></div>
+          <p class="muted small" style="margin:8px 0 0">점선은 나쁨(36㎍/㎥)·매우나쁨(76㎍/㎥) 시작 기준. 그래프 위에 올리면 그날의 기온·풍속·강수도 함께 보여요.</p>
+        </div>
+      </article>
+
+      <div class="grid grid-2">
+        <article class="panel">
+          <div class="panel-head"><h2>월별 평균</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>월</th><th class="r">PM2.5</th><th>등급</th><th class="r hide-sm">PM10</th><th class="r">기온(℃)</th><th class="r">강수(mm)</th></tr></thead>
+              <tbody id="monthlyTable"></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><h2>기상 조건별 평균 PM2.5</h2></div>
+          <div class="panel-body stack" id="relationBox"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== AI 비서 ===================== -->
+  <section data-page="chat" aria-labelledby="h-chat" hidden>
+    <div class="page-head">
+      <div>
+        <div class="crumb">홈 › AI 비서</div>
+        <h1 id="h-chat">AI 비서</h1>
+      </div>
+      <button class="btn" type="button" id="newChatBtn">새 대화</button>
+    </div>
+
+    <div class="chat-layout">
+      <aside class="panel conv-side" aria-label="이전 대화">
+        <div class="panel-head"><h2>이전 대화</h2></div>
+        <ul class="conv-list" id="convSide"></ul>
+      </aside>
+
+      <article class="panel chat-panel">
+        <div class="ctx-strip" id="ctxStrip" aria-label="AI가 참고하는 데이터 요약"></div>
+        <div class="messages" id="messages" aria-live="polite"></div>
+        <div>
+          <form class="composer" id="chatForm" novalidate>
+            <label class="sr-only" for="chatInput">질문 입력</label>
+            <textarea class="input" id="chatInput" rows="1" maxlength="1000" placeholder="예: 비 오는 날은 미세먼지가 낮아?"></textarea>
+            <button class="btn btn-primary" type="submit" id="sendBtn">보내기</button>
+          </form>
+          <div class="composer-hint" id="chatHint">Enter로 보내기 · Shift+Enter로 줄바꿈 · 대화는 자동 저장돼요</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== 데이터 관리 ===================== -->
+  <section data-page="data" aria-labelledby="h-data" hidden>
+    <div class="page-head">
+      <div>
+        <div class="crumb">홈 › 데이터 관리</div>
+        <h1 id="h-data">데이터 관리</h1>
+      </div>
+    </div>
+
+    <div class="stack">
+      <article class="panel">
+        <div class="panel-head"><h2 id="formTitle">새 데이터 추가</h2><span class="muted small"><span style="color:var(--danger)">*</span> 필수 항목</span></div>
+        <form class="panel-body" id="dataForm" novalidate>
+          <div class="form-grid">
+            <div class="field"><label for="f-date">날짜 <span class="req">*</span></label><input class="input" type="date" id="f-date" required><span class="field-error" id="e-date"></span></div>
+            <div class="field"><label for="f-value">초미세먼지 PM2.5 (㎍/㎥) <span class="req">*</span></label><input class="input num" type="number" id="f-value" step="0.1" min="0" max="1000" required inputmode="decimal"><span class="field-error" id="e-value"></span></div>
+            <div class="field"><label for="f-pm10">미세먼지 PM10 (㎍/㎥)</label><input class="input num" type="number" id="f-pm10" step="0.1" min="0" max="2000" inputmode="decimal"></div>
+            <div class="field"><label for="f-temp_avg">평균기온 (℃)</label><input class="input num" type="number" id="f-temp_avg" step="0.1" min="-40" max="50" inputmode="decimal"></div>
+            <div class="field"><label for="f-temp_min">최저기온 (℃)</label><input class="input num" type="number" id="f-temp_min" step="0.1" min="-40" max="50" inputmode="decimal"></div>
+            <div class="field"><label for="f-temp_max">최고기온 (℃)</label><input class="input num" type="number" id="f-temp_max" step="0.1" min="-40" max="50" inputmode="decimal"></div>
+            <div class="field"><label for="f-rain">강수량 (mm)</label><input class="input num" type="number" id="f-rain" step="0.1" min="0" max="1000" inputmode="decimal"></div>
+            <div class="field"><label for="f-wind">평균 풍속 (m/s)</label><input class="input num" type="number" id="f-wind" step="0.1" min="0" max="60" inputmode="decimal"></div>
+            <div class="field"><label for="f-humidity">평균 습도 (%)</label><input class="input num" type="number" id="f-humidity" step="0.1" min="0" max="100" inputmode="decimal"></div>
+            <div class="field wide"><label for="f-memo">메모</label><input class="input" type="text" id="f-memo" maxlength="200" placeholder="예: 황사 특보, 비 온 다음 날"></div>
+          </div>
+          <div class="form-foot">
+            <span class="field-error" id="e-form"></span>
+            <div class="btn-row">
+              <button class="btn" type="button" id="cancelEditBtn" hidden>취소</button>
+              <button class="btn btn-primary" type="submit" id="saveBtn">추가</button>
+            </div>
+          </div>
+        </form>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>데이터 목록</h2>
+          <span class="muted small" id="dataCount"></span>
+        </div>
+        <div class="panel-body toolbar">
+          <div class="left">
+            <label class="sr-only" for="monthFilter">월 선택</label>
+            <select class="input" id="monthFilter" style="width:auto"></select>
+            <label class="sr-only" for="memoSearch">메모 검색</label>
+            <input class="input" type="search" id="memoSearch" placeholder="메모 검색" style="width:160px">
+          </div>
+          <div class="right">
+            <button class="btn btn-sm" type="button" id="exportCsv">CSV 내보내기</button>
+            <button class="btn btn-sm" type="button" id="exportJson">JSON 내보내기</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>날짜</th><th class="r">PM2.5</th><th>등급</th><th class="r hide-sm">PM10</th>
+              <th class="r">기온</th><th class="r hide-sm">강수</th><th class="r hide-sm">풍속</th><th class="hide-sm">메모</th><th class="r">관리</th>
+            </tr></thead>
+            <tbody id="dataTable"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="pager"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== 대화 기록 ===================== -->
+  <section data-page="history" aria-labelledby="h-history" hidden>
+    <div class="page-head">
+      <div>
+        <div class="crumb">홈 › 대화 기록</div>
+        <h1 id="h-history">대화 기록</h1>
+      </div>
+      <button class="btn" type="button" id="refreshHistory">새로고침</button>
+    </div>
+    <article class="panel">
+      <div class="panel-head"><h2>저장된 대화</h2><span class="muted small" id="historyCount"></span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>제목</th><th class="r">메시지</th><th class="hide-sm">마지막 메시지</th><th>수정일</th><th class="r">관리</th></tr></thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>서울 대기질 AI 비서 · FastAPI · Firestore · OpenAI GPT</span>
+    <span>초미세먼지 등급: 좋음 0~15 · 보통 16~35 · 나쁨 36~75 · 매우나쁨 76 이상 (㎍/㎥)</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="config.js"></script>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

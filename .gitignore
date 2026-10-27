@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# 비밀 정보 — 절대 커밋 금지
+.env
+*serviceAccount*.json
+*firebase-adminsdk*.json
+
+# 프론트 빌드 결과
+frontend/dist/
+frontend/config.local.js
+
+# 원본 CSV (cp949, 용량 큼) — 전처리 결과만 커밋
+data/raw/
+
+.DS_Store
+.vercel
