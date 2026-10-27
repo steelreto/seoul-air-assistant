@@ -105,6 +105,11 @@ def _get_client():
     return _client
 
 
+def _detail(e: Exception) -> str:
+    """외부 API가 돌려준 오류 문구 (디버깅용, 너무 길면 자름)"""
+    return str(getattr(e, "message", e))[:200]
+
+
 def _create(client, settings, messages: list[dict], token_param: str):
     return client.chat.completions.create(
         model=settings.openai_model,
@@ -132,11 +137,11 @@ def call_llm(messages: list[dict]) -> str:
             f"모델 '{settings.openai_model}'을 찾을 수 없어요. OPENAI_MODEL 또는 OPENAI_BASE_URL을 확인하세요."
         ) from e
     except openai.AuthenticationError as e:
-        raise ExternalServiceError("OpenAI 인증 실패: API 키를 확인하세요.") from e
+        raise ExternalServiceError(f"OpenAI 인증 실패: API 키나 OPENAI_BASE_URL을 확인하세요. ({_detail(e)})") from e
     except openai.RateLimitError as e:
-        raise ExternalServiceError("OpenAI 사용량 한도 초과 또는 잔액 부족이에요.") from e
+        raise ExternalServiceError(f"OpenAI 사용량 한도 초과 또는 잔액 부족이에요. ({_detail(e)})") from e
     except openai.APIError as e:
-        raise ExternalServiceError(f"OpenAI 호출 실패: {e.__class__.__name__}") from e
+        raise ExternalServiceError(f"OpenAI 호출 실패: {e.__class__.__name__} ({_detail(e)})") from e
 
     reply = (resp.choices[0].message.content or "").strip()
     if not reply:
