@@ -11,9 +11,9 @@
 
 | 구분 | URL |
 |---|---|
-| 프론트엔드 (Vercel) | `https://(작성 예정).vercel.app` |
-| 백엔드 API (Render) | `https://(작성 예정).onrender.com` |
-| Swagger UI | `https://(작성 예정).onrender.com/docs` |
+| 프론트엔드 (Vercel) | https://seoul-air-assistant-frontend.vercel.app |
+| 백엔드 API (Render) | https://seoul-air-assistant.onrender.com |
+| Swagger UI | https://seoul-air-assistant.onrender.com/docs |
 
 > Render 무료 플랜은 15분간 요청이 없으면 잠들어, 첫 접속에 최대 1분 정도 걸립니다.
 > 프론트는 접속 시 `/health`로 서버를 먼저 깨우고 "서버를 깨우는 중이에요" 안내를 띄웁니다.
