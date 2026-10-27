@@ -68,7 +68,8 @@ def root():
 @app.get("/health", tags=["health"], summary="상태 확인 (콜드스타트 깨우기용)")
 def health():
     return {"status": "ok", "db": get_backend(), "model": settings.openai_model,
-            "openai_configured": bool(settings.openai_api_key)}
+            "openai_configured": bool(settings.openai_api_key),
+            "openai_base_url": "custom" if settings.openai_base_url else "default"}
 
 
 app.include_router(data.router)

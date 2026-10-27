@@ -155,6 +155,7 @@ conversations/{자동 ID}
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | ✅(배포) | 서비스 계정 키 JSON 전체를 한 줄 문자열로 |
 | `FIREBASE_SERVICE_ACCOUNT_PATH` | ✅(로컬) | 서비스 계정 키 파일 경로 (위 JSON과 둘 중 하나) |
 | `ALLOWED_ORIGINS` | ✅ | CORS 허용 도메인, 쉼표 구분 (예: `https://xxx.vercel.app,http://127.0.0.1:5500`) |
+| `OPENAI_BASE_URL` | | OpenAI 호환 API(교육기관 제공 등)를 쓸 때 그 주소. 비우면 OpenAI 공식 서버 |
 | `OPENAI_MODEL` | | 기본 `gpt-4o-mini` |
 | `OPENAI_MAX_TOKENS` | | 답변 최대 토큰, 기본 500 |
 | `CHAT_HISTORY_LIMIT` | | GPT에 함께 보낼 이전 메시지 수, 기본 10 |

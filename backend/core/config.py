@@ -19,6 +19,8 @@ class Settings:
     def __init__(self) -> None:
         # OpenAI
         self.openai_api_key: str = os.getenv("OPENAI_API_KEY", "").strip()
+        # OpenAI 호환 API(예: 교육기관 제공 프록시)를 쓸 때만 설정. 비우면 OpenAI 공식 서버 사용
+        self.openai_base_url: str = os.getenv("OPENAI_BASE_URL", "").strip().rstrip("/")
         self.openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
         self.openai_max_tokens: int = int(os.getenv("OPENAI_MAX_TOKENS", "500"))
         self.chat_history_limit: int = int(os.getenv("CHAT_HISTORY_LIMIT", "10"))

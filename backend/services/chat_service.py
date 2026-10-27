@@ -96,8 +96,21 @@ def _get_client():
     if _client is None:
         from openai import OpenAI
 
-        _client = OpenAI(api_key=settings.openai_api_key, timeout=30, max_retries=1)
+        _client = OpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url or None,  # None이면 OpenAI 공식 주소
+            timeout=30,
+            max_retries=1,
+        )
     return _client
+
+
+def _create(client, settings, messages: list[dict], token_param: str):
+    return client.chat.completions.create(
+        model=settings.openai_model,
+        messages=messages,
+        **{token_param: settings.openai_max_tokens},  # 답변 길이(비용) 제한
+    )
 
 
 def call_llm(messages: list[dict]) -> str:
@@ -107,11 +120,17 @@ def call_llm(messages: list[dict]) -> str:
     settings = get_settings()
     client = _get_client()
     try:
-        resp = client.chat.completions.create(
-            model=settings.openai_model,
-            messages=messages,
-            max_completion_tokens=settings.openai_max_tokens,  # 비용 제한
-        )
+        try:
+            resp = _create(client, settings, messages, "max_completion_tokens")
+        except openai.BadRequestError as e:
+            # 일부 OpenAI 호환 서버는 예전 파라미터 이름(max_tokens)만 받는다
+            if "max_completion_tokens" not in str(e):
+                raise
+            resp = _create(client, settings, messages, "max_tokens")
+    except openai.NotFoundError as e:
+        raise ExternalServiceError(
+            f"모델 '{settings.openai_model}'을 찾을 수 없어요. OPENAI_MODEL 또는 OPENAI_BASE_URL을 확인하세요."
+        ) from e
     except openai.AuthenticationError as e:
         raise ExternalServiceError("OpenAI 인증 실패: API 키를 확인하세요.") from e
     except openai.RateLimitError as e:
