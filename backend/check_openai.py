@@ -50,7 +50,7 @@ try:
     r = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": "한 단어로 인사해 줘"}],
-        max_tokens=20,
+        max_completion_tokens=300,  # GPT-5 계열은 추론 토큰도 여기에 포함됨
     )
     print("성공:", r.choices[0].message.content)
 except Exception as e:

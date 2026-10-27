@@ -600,7 +600,7 @@
     box.innerHTML = state.messages.map((m) => `
       <div class="msg ${m.role}${m.error ? " error" : ""}">
         <span class="who">${m.role === "user" ? "나" : "AI 비서"}</span>
-        <div class="bubble">${esc(m.content)}</div>
+        <div class="bubble">${esc(m.content).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")}</div>
       </div>`).join("") + (loading ? `
       <div class="msg assistant"><span class="who">AI 비서</span>
         <div class="bubble"><span class="typing" aria-label="답변 작성 중"><i></i><i></i><i></i></span> <span class="muted small">데이터를 보고 답변을 쓰는 중이에요</span></div>

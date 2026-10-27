@@ -157,7 +157,7 @@ conversations/{자동 ID}
 | `ALLOWED_ORIGINS` | ✅ | CORS 허용 도메인, 쉼표 구분 (예: `https://xxx.vercel.app,http://127.0.0.1:5500`) |
 | `OPENAI_BASE_URL` | | OpenAI 호환 API(교육기관 제공 등)를 쓸 때 그 주소. 비우면 OpenAI 공식 서버 |
 | `OPENAI_MODEL` | | 기본 `gpt-4o-mini` |
-| `OPENAI_MAX_TOKENS` | | 답변 최대 토큰, 기본 500 |
+| `OPENAI_MAX_TOKENS` | | 답변 최대 토큰, 기본 500 (GPT-5 계열은 추론 토큰도 포함되므로 1500 권장) |
 | `CHAT_HISTORY_LIMIT` | | GPT에 함께 보낼 이전 메시지 수, 기본 10 |
 | `USE_MEMORY_DB` | | `true`면 Firebase 없이 메모리 DB로 실행 (로컬 테스트 전용) |
 
